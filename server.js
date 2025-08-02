@@ -10,7 +10,7 @@ app.use(express.json());
 const FILE = "./contacts.json";
 
 function readContacts() {
-  return JSON.parse(fs.readFileSync(FILE));
+  return JSON.parse(fs.readFileSync(FILE, 'utf8'));
 }
 
 function writeContacts(data) {
@@ -23,15 +23,20 @@ app.get("/contacts", (req, res) => {
 
 app.post("/contacts", (req, res) => {
   const contacts = readContacts();
-  contacts.push(req.body);
+  // Generate a new, unique ID for the new contact
+  const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
+  const newContact = { id: newId, ...req.body };
+  contacts.push(newContact);
   writeContacts(contacts);
-  res.status(201).json({ message: "Contact added" });
+  res.status(201).json({ message: "Contact added", contact: newContact });
 });
 
-app.delete("/contacts/:index", (req, res) => {
+app.delete("/contacts/:id", (req, res) => {
   const contacts = readContacts();
-  contacts.splice(req.params.index, 1);
-  writeContacts(contacts);
+  // Find the contact by its ID and filter it out of the array
+  const idToDelete = parseInt(req.params.id);
+  const updatedContacts = contacts.filter(contact => contact.id !== idToDelete);
+  writeContacts(updatedContacts);
   res.json({ message: "Contact deleted" });
 });
 
