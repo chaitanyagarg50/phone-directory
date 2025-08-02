@@ -2,7 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phone Directory</title>
+  <style>
+    /* iOS-inspired CSS is all in this block */
+    :root {
+        --ios-blue: #007aff;
+        --ios-red: #ff3b30;
+        --light-gray: #f2f2f7;
+        --medium-gray: #c7c7cc;
+        --dark-gray: #8e8e93;
+        --background-color: #ffffff;
+        --border-color: #e2e2e2;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        background-color: var(--light-gray);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--ios-blue);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    #contactForm {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        max-width: 400px;
+        background-color: var(--background-color);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--ios-blue);
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+    }
+
+    button[type="submit"] {
+        background-color: var(--ios-blue);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+        filter: brightness(1.1);
+    }
+
+    ul#contactList {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 400px;
+        background-color: var(--background-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .contact-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+    }
+
+    .contact-item:last-child {
+        border-bottom: none;
+    }
+
+    .contact-item:hover {
+        background-color: var(--light-gray);
+    }
+
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contact-name {
+        font-weight: 500;
+        font-size: 17px;
+    }
+
+    .contact-phone {
+        font-size: 14px;
+        color: var(--dark-gray);
+    }
+
+    .delete-button {
+        background-color: var(--ios-red);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .delete-button:hover {
+        background-color: #e53935;
+    }
+  </style>
 </head>
 <body>
   <h1>Public Phone Directory</h1>
@@ -15,20 +151,23 @@
   <ul id="contactList"></ul>
 
   <script>
-    const API_URL = "http://localhost:3000/contacts"; // Change to your deployed backend URL
+    const API_URL = "http://localhost:3000/contacts";
 
     async function fetchContacts() {
       const res = await fetch(API_URL);
       const contacts = await res.json();
-      document.getElementById("contactList").innerHTML = contacts.map((c, i) => `
-        <li>
-          ${c.name} - ${c.phone}
-          <button onclick="deleteContact(${i})">Delete</button>
+      document.getElementById("contactList").innerHTML = contacts.map((c) => `
+        <li class="contact-item">
+          <div class="contact-info">
+            <span class="contact-name">${c.name}</span>
+            <span class="contact-phone">${c.phone}</span>
+          </div>
+          <button class="delete-button" onclick="deleteContact('${c.id}')">Delete</button>
         </li>`).join("");
     }
 
-    async function deleteContact(index) {
-      await fetch(API_URL + `/${index}`, { method: "DELETE" });
+    async function deleteContact(id) {
+      await fetch(API_URL + `/${id}`, { method: "DELETE" });
       fetchContacts();
     }
 
