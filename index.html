@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phone Directory</title>
+</head>
+<body>
+  <h1>Public Phone Directory</h1>
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="phone" placeholder="Phone Number" required />
+    <button type="submit">Add Contact</button>
+  </form>
+
+  <ul id="contactList"></ul>
+
+  <script>
+    const API_URL = "http://localhost:3000/contacts"; // Change to your deployed backend URL
+
+    async function fetchContacts() {
+      const res = await fetch(API_URL);
+      const contacts = await res.json();
+      document.getElementById("contactList").innerHTML = contacts.map((c, i) => `
+        <li>
+          ${c.name} - ${c.phone}
+          <button onclick="deleteContact(${i})">Delete</button>
+        </li>`).join("");
+    }
+
+    async function deleteContact(index) {
+      await fetch(API_URL + `/${index}`, { method: "DELETE" });
+      fetchContacts();
+    }
+
+    document.getElementById("contactForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone })
+      });
+      document.getElementById("contactForm").reset();
+      fetchContacts();
+    });
+
+    fetchContacts();
+  </script>
+</body>
+</html>
