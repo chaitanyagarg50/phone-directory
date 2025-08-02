@@ -2,232 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phone Directory</title>
-  <style>
-    /* iOS-inspired CSS is all in this block */
-    :root {
-        --ios-blue: #007aff;
-        --ios-red: #ff3b30;
-        --light-gray: #f9f9f9;
-        --medium-gray: #e0e0e0;
-        --dark-gray: #8a8a8e;
-        --background-color: #ffffff;
-        --border-color: #c6c6c8;
-    }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        background-color: var(--light-gray);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: #333;
-        min-height: 100vh;
-    }
-
-    .header {
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-        padding: 15px 20px;
-        background-color: var(--background-color);
-        border-bottom: 0.5px solid var(--border-color);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    
-    h1 {
-        font-size: 20px;
-        font-weight: 600;
-        color: #000;
-        margin: 0;
-    }
-
-    .content-container {
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-      padding-top: 0;
-      flex-grow: 1;
-    }
-
-    #contactForm {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        background-color: var(--background-color);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-        width: 100%;
-        padding: 14px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 16px;
-        transition: all 0.2s ease;
-        box-sizing: border-box; /* Ensures padding is included in the element's total width and height */
-    }
-
-    input[type="text"]:focus {
-        outline: none;
-        border-color: var(--ios-blue);
-        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
-    }
-
-    button[type="submit"] {
-        background-color: var(--ios-blue);
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        padding: 14px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    button[type="submit"]:hover {
-        background-color: #006aff;
-    }
-
-    button[type="submit"]:active {
-        background-color: #005ce6;
-    }
-
-    ul#contactList {
-        list-style: none;
-        padding: 0;
-        width: 100%;
-        background-color: var(--background-color);
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-        border: 0.5px solid var(--border-color);
-    }
-
-    .contact-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        border-bottom: 0.5px solid var(--border-color);
-        transition: background-color 0.2s ease;
-    }
-
-    .contact-item:last-child {
-        border-bottom: none;
-    }
-
-    .contact-item:hover {
-        background-color: var(--light-gray);
-    }
-
-    .contact-info {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .contact-name {
-        font-weight: 500;
-        font-size: 17px;
-    }
-
-    .contact-phone {
-        font-size: 14px;
-        color: var(--dark-gray);
-        margin-top: 2px;
-    }
-
-    .delete-button {
-        background-color: var(--ios-red);
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        -webkit-appearance: none;
-    }
-    
-    .delete-button:hover {
-        background-color: #e53935;
-    }
-
-    .delete-button:active {
-        background-color: #d12e2e;
-    }
-  </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Public Phone Directory</h1>
-  </div>
-  <div class="content-container">
-    <form id="contactForm">
-      <input type="text" id="name" placeholder="Name" required />
-      <input type="text" id="phone" placeholder="Phone Number" required />
-      <button type="submit">Add Contact</button>
-    </form>
+  <h1>Public Phone Directory</h1>
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="phone" placeholder="Phone Number" required />
+    <button type="submit">Add Contact</button>
+  </form>
 
-    <ul id="contactList"></ul>
-  </div>
+  <ul id="contactList"></ul>
 
   <script>
-    const API_URL = "http://localhost:3000/contacts";
+    const API_URL = "http://localhost:3000/contacts"; // Change to your deployed backend URL
 
     async function fetchContacts() {
-      try {
-        const res = await fetch(API_URL);
-        const contacts = await res.json();
-        document.getElementById("contactList").innerHTML = contacts.map((c) => `
-          <li class="contact-item">
-            <div class="contact-info">
-              <span class="contact-name">${c.name}</span>
-              <span class="contact-phone">${c.phone}</span>
-            </div>
-            <button class="delete-button" onclick="deleteContact('${c.id}')">Delete</button>
-          </li>`).join("");
-      } catch (error) {
-        console.error("Error fetching contacts:", error);
-      }
+      const res = await fetch(API_URL);
+      const contacts = await res.json();
+      document.getElementById("contactList").innerHTML = contacts.map((c) => `
+        <li>
+          ${c.name} - ${c.phone}
+          <button onclick="deleteContact(${c.id})">Delete</button>
+        </li>`).join("");
     }
 
     async function deleteContact(id) {
-      try {
-        await fetch(API_URL + `/${id}`, { method: "DELETE" });
-        fetchContacts();
-      } catch (error) {
-        console.error("Error deleting contact:", error);
-      }
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      fetchContacts();
     }
 
     document.getElementById("contactForm").addEventListener("submit", async e => {
       e.preventDefault();
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
-      try {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, phone })
-        });
-        document.getElementById("contactForm").reset();
-        fetchContacts();
-      } catch (error) {
-        console.error("Error adding contact:", error);
-      }
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone })
+      });
+      document.getElementById("contactForm").reset();
+      fetchContacts();
     });
 
     fetchContacts();
